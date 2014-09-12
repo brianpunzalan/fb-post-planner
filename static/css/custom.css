@@ -1,0 +1,48 @@
+.movie-list > li{
+	display: inline;
+	width: auto;
+}
+.thumb > h4{
+	text-align: center;
+}
+#casts{
+	list-style-type: none;
+	overflow-y: auto;
+	height: 350px;
+}
+
+#casts > li{
+	margin: 10px;
+}
+
+#casts > li > span{
+	display: inline;
+	font : italic 15px/20px Arial, Serif;
+	margin-left: 30px;
+}
+
+#casts > li > img{
+	display:inline;
+}
+
+.movie{
+	width: 540px;
+	height: 303px;
+	margin:10px;
+}
+.description{
+	background-color: #303030;
+	opacity: 0.8;
+	top: -120px;
+	position: relative;
+	padding:10px;
+	color: white;
+}
+.description > img {
+	float: left;
+	width: 100px;
+	height: 100px;
+}
+.description > h4{
+	color: white;
+}

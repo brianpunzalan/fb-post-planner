@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript" src="/static/js/vendors/jquery.js"></script>
+	<script type="text/javascript" src="/static/js/vendors/handlebars.js"></script>
+
+	{% raw %}
+
+	<script type="text/x-handlebars-template" id="tpl-tweet">
+		<h3>{{post}}</h3>
+		<em>{{author}}</em>
+	</script>
+
+	<script type="text/x-handlebars-template" id="tpl-tweets">
+		{{#each this}}
+			<li>
+				<h3>{{post}}</h3>
+				<em>{{author}} - {{age}}</em>
+			</li>
+		{{/each}}
+	</script>
+	
+	{% endraw %}
+	<script type="text/javascript">
+
+	$(function(){
+		var tweet = [
+			{
+				"author" : "Juan Dela Cruz",
+				"post": "Magic of CSS",
+				"age" : 20
+			},
+			{
+				"author" : "JC",
+				"post" : "Amazing"
+			}
+		];
+		// var rawTpl = $("#tpl-tweet").html();
+		// var template = Handlebars.compile(rawTpl);
+		// var markup = template(tweet);
+		// $('body').append(markup);
+
+		var markup = Handlebars.compile($("#tpl-tweets").html())(tweet);
+		$('ul').append(markup);
+	});
+	</script>
+</body>
+</html>

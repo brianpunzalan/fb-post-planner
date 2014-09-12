@@ -1,0 +1,53 @@
+movie database application
+
+search for movie
+
+display list of movies
+	now showing
+	upcoming
+	popular
+	top rated
+
+view movie details
+	synopsis
+	trailer
+	cast of characters
+	similar movies
+
+
+repo: coe-movie-db
+
+startbootstrap.com
+
+
+part1 : aug 23 7pm
+	- search
+	- now showing -> 
+	- upcoming   - > LIST VIEW
+	- popular    ->
+part2 : aug 29 (Friday 7pm)
+	movie page
+	-synopsis
+	-cast of Chars -> api
+	-trailer
+	-similar movies -> api
+	
+
+portfolio item - startbootstrap
+
+
+module 7
+
+backdrop
+
+per 2
+
+detail
+-overview
+-tagline
+-director
+-cast(with picture)
+-backdrops
+-similar movies
+-trailer
+-poster
