@@ -47,7 +47,6 @@ function initialize() {
     }
     function postToFB(msg){
         var url = baseUrl + user.userID + "/feed/";
-        alert(user.userID);
         var data = {
                     method: "post",
                     message: msg,
