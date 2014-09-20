@@ -1,22 +1,26 @@
 window.fbAsyncInit = function() {
-  FB.init({
-    appId      : '767075363357147',
-    xfbml      : true,
-    version    : 'v2.0'
-  });
-
+    FB.init({
+      appId      : '767075363357147',
+      xfbml      : true,
+      version    : 'v2.1',
+      cookie     : true
+    });
+    initialize(setEventHandlers);
+};
 (function(d, s, id){
-   var js, fjs = d.getElementsByTagName(s)[0];
-   if (d.getElementById(id)) {return;}
-   js = d.createElement(s); js.id = id;
-   js.src = "//connect.facebook.net/en_US/sdk.js";
-   fjs.parentNode.insertBefore(js, fjs);
- }(document, 'script', 'facebook-jssdk'));
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 
-var user;
-var baseUrl = "https://graph.facebook.com/v2.1/";
+
+    var user;
+    var baseUrl = "https://graph.facebook.com/v2.1/";
 
     function initialize(callback) {
+        console.log("initialize");
         callback();
     }
 
@@ -30,6 +34,7 @@ var baseUrl = "https://graph.facebook.com/v2.1/";
         
         // login button
         $('#fb-login').click(function(){
+            console.log("login");
             if(!checkLoginState()){
                 login();
             }
@@ -37,43 +42,71 @@ var baseUrl = "https://graph.facebook.com/v2.1/";
 
         // form submit
         $('#post-form').submit(function(){
+            $('#access_token').val(user.accessToken);
+            $('#userID').val(user.userID);
+            //console.log($('#post-form message').val())
+            return true;
+            // var msg = $('#post-form > textarea').val();
+            // $('#post-form [name="access_token"]').val(user.accessToken);
+            // $('#post-form [name="userID"]').val(user.userID);    
+             /*
             if(checkLoginState()){
-                var msg = $('#post-form > textarea').val();
-                postToFB(msg);
+                //postToFB(msg);
+                //$(this).attr('action','/fbpost?message='+msg+'&access_token='+user.access_token+'&userID='+user.userID)
+                console.log("submitting")
+                $('#post-form [name="access_token"]').val(user.access_token);
+                $('#post-form [name="userID"]').val(user.userID);
                 return true;
             }
             else{
-                return false;
+                console.log("false")
+                if(login()){
+                    //postToFB(msg);
+                    //$(this).attr('action','/fbpost?message='+msg+'&access_token='+user.access_token+'&userID='+user.userID)
+                    console.log("ipost");
+                    $('#post-form [name="access_token"]').val(user.access_token);
+                    $('#post-form [name="userID"]').val(user.userID);
+                    return true;
+                }else{
+                    return false;    
+                }
             }
+            */
         });
+    }
+
+    // user status
+    function statusChangeCallback(response){
+        console.log(response.status);
+        if(response.status === 'connected'){
+            setUserData(response);
+            //alert("Connected!");
+            toggleLogin();
+            return true;
+        }
+        else if(response.status === 'not_authorized'){
+            //alert("Not Authorized! Please Log into this application");
+            return false;
+        }
+        else{
+            //alert("Please Log into Facebook.");
+            return false;
+        }
     }
 
     // check if logged in facebook
     function checkLoginState(){
         FB.getLoginStatus(function(response){
-            if(response.status === 'connected'){
-                setUserData(response);
-                //alert("Connected!");
-                toggleLogin();
-                return true;
-            }
-            else if(response.status === 'not_authorized'){
-                //alert("Not Authorized! Please Log into this application");
-                return false;
-            }
-            else{
-                //alert("Please Log into Facebook.");
-                return false;
-            }
+            return statusChangeCallback(response);
         });
     }
 
     // post to facebook
-    function postToFB(callback){
+    function postToFB(message){
         var url = baseUrl + user.userID + "/feed/";
         var data = {
                     method: "post",
-                    message: callback,
+                    message: message,
                     access_token: user.accessToken
                 };
         $.get(url,data,function(response){
@@ -89,7 +122,7 @@ var baseUrl = "https://graph.facebook.com/v2.1/";
 
     // set value to variable 'user'
     function setUserData(callback){
-        user=callback.authResponse;
+        user = callback.authResponse;
     }
 
 
@@ -97,8 +130,16 @@ var baseUrl = "https://graph.facebook.com/v2.1/";
     function login(){
         FB.login(function(response){
             if(response.authResponse){
-                getFBresponse(response);
+                console.log(response.authResponse.userID);
+                console.log(response.authResponse.access_token);
+                console.log(response.authResponse.expiresIn);
+                console.log(response.authResponse.signedRequest);
+                setUserData(response);
                 toggleLogin();
+                return true;
+            }
+            else{
+                return false;
             }
         }, {scope: 'publish_actions',return_scopes:true});
     }
@@ -116,8 +157,3 @@ var baseUrl = "https://graph.facebook.com/v2.1/";
     function toggleLogin(){
         $("#fb-login,#fb-logout").toggle();
     }
-
-
-
-
-initialize(setEventHandlers);
