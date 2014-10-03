@@ -12,102 +12,126 @@ import jinja2
 import webapp2
 import logging
 
+#from models import Post
+#from models import Users
+
+FACEBOOK_APP_ID = "767075363357147"
+FACEBOOK_APP_SECRET = "a9a299a90cd3398167680df4890a9f8f"
+GRAPH_API_URL =" https://graph.facebook.com/v2.1"
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+def short_to_long_lived(access_token,self):
+    url = "https://graph.facebook.com/oauth/access_token"
+    data = {
+        "grant_type" : "fb_exchange_token",
+        "fb_exchange_token": access_token,
+        "client_id" : FACEBOOK_APP_ID,
+        "client_secret" : FACEBOOK_APP_SECRET,
+        
+    }
+    form_data = urllib.urlencode(data)
+    result = urlfetch.fetch(url=url,payload=form_data,method=urlfetch.POST)
+
+    return result.content
+
+def decode_response(str):
+    access_token = str.split("&")[0].split("=")[1]
+    return {
+        "access_token" : access_token,
+    }
+
 class MainHandler(webapp2.RequestHandler):
     def get(self):
+        self.response.write("<script>alert('testing')</script>");
         template = JINJA_ENVIRONMENT.get_template('templates/main.html')
         self.response.write(template.render())
 
     def post(self):
-        #post = Post()
-        self.response.write("<script>console.log('fbposthandler ....')</script>")
-        message = self.request.get('message')
-        access_token = self.request.get('access_token')
-        userID = self.request.get('userID')
+        post = Posts()
+
+        post.userID = self.request.get("userID")
+        post.message = self.request.get("message")
+        post.date_to_post = datetime.strptime(self.request.get("date_to_post"),'%m/%d/%Y %I:%M %p')
+        access_token = self.request.get("access_token")
+        request = short_to_long_lived(access_token,self)
+        request = decode_response(request)
+        post.access_token = request["access_token"]
         
-        self.response.write("<script>console.log('"+access_token+"')</script>")
-        self.response.write("<script>console.log('"+message+"')</script>")
-        self.response.write("<script>console.log('"+userID+"')</script>")
+        post.put()
 
-        url = "https://graph.facebook.com/v2.1/"+userID+"/feed"
+        self.response.write('<script>alert("Post Scheduled");window.location.assign("/")</script>')
+        self.response.write(post.access_token)
+        # post = Post()
+        # self.response.write("<script>console.log('fbposthandler ....')</script>")
+        # message = self.request.get('message')
+        # access_token = self.request.get('access_token')
+        # userID = self.request.get('userID')
 
-        form_fields = {
-            "method": "post",
-            "message" : message,
-            "access_token" : access_token
+        # url = "https://graph.facebook.com/v2.1/"+userID+"/feed"
+
+        # form_fields = {
+        #     "method": "post",
+        #     "message" : message,
+        #     "access_token" : access_token
+        # }
+
+        # form_data = urllib.urlencode(form_fields)
+        # result = urlfetch.fetch(url=url,
+        #     payload=form_data,
+        #     method=urlfetch.POST,
+        # )
+        
+        # if result.status_code == 200:
+        #     self.response.write("<script>alert('Successful')</script>")
+        # elif result.status_code == 400:
+        #     self.response.write("<script>alert('Not Successful')</script>")
+        # self.response.write(result.status_code);
+
+        # content = json.loads(result.content)
+
+
+class EditPostHandler(webapp2.RequestHandler):
+    def get(self,id):
+        post = Posts.get_by_id(long(id))
+        date = post.date_to_post.strftime("%m/%d/%Y %I:%M %p")
+        template_values = {
+            "post" : post,
+            "date" : date
         }
+        write_template(self,"edit.html",template_values)
+    def post(self,id):
+        post = Posts.get_by_id(long(id))
+        post.message = self.request.get("message")
+        post.date_to_post = datetime.strptime(self.request.get("date_to_post"),'%m/%d/%Y %I:%M %p')
+        post.put()
+        self.response.write("<script> alert('Edit Successful.');window.location.assign('/list/"+post.user_id+"')</script>")
 
-        form_data = urllib.urlencode(form_fields)
-        result = urlfetch.fetch(url=url,
-            payload=form_data,
-            method=urlfetch.POST,
-        )
-        
-        if result.status_code == 200:
-            self.response.write("<script>console.log("+access_token+")</script>")
-            self.response.write("<script>alert('Successful')</script>")
-        elif result.status_code == 400:
-            self.response.write("<script>console.log("+access_token+")</script>")
-            self.response.write("<script>alert('Not Successful')</script>")
-        self.response.write(result.status_code);
-
-        content = json.loads(result.content)
+class DeleteHandler(webapp2.RequestHandler):
+    def get(self,id):
+        post = Posts.get_by_id(long(id))
+        post.key.delete()
+        self.response.write("<script> alert('Edit Successful.');window.location.assign('/list/"+post.user_id+"')</script>")
 
 
+class User(ndb.Model):
+    user_id = ndb.StringProperty(required=True)
+    access_token = ndb.StringProperty(required=True)
 
 class Post(ndb.Model):
     message = ndb.StringProperty(indexed=False)
     access_token = ndb.StringProperty(indexed=False)
     userID = ndb.StringProperty(indexed=False)
-
-class FBPostHandler(webapp2.RequestHandler):
-    def post(self):
-        #post = Post()
-        self.response.write("<script>console.log('fbposthandler ....')</script>")
-        message = self.request.get('message')
-        access_token = self.request.get('access_token');
-        userID = self.request.googleet('userID')
-        
-        form_fields = {
-            "message" : message,
-            "access_token" : access_token,
-            "method": "post"
-        }
-
-        form_data = urllib.urlencode(form_fields)
-        result = urlfetch.fetch(url=url,
-            payload=form_data,
-            method=urlfetch.POST,
-        )
-
-        self.response.write("<script>console.log('"+result+"'')</script>")
-
-        content = json.loads(result.content)
-
-        self.response.write("<script>console.log('"+content+"'')</script>")
-
-        if(content.get('id')):
-            self.response.write('<script>alert("POSTED");window.location.assign("/")</script>')
-        elif content["error"]["error_user_title"]:
-            self.response.write("<script>alert('"+content["error"]["error_user_title"]+"'); window.location.assign('/')</script>")
-        else:
-            self.response.write('<script>alert("An error occurred."); window.location.assign("/")</script>')
-
-        #post.put()
-
-        #self.redirect('/success')
-
-class FBPostSuccessHandler(webapp2.RequestHandler):
-    def get():
-        template = JINJA_ENVIRONMENT.get_template('template/success.html')
-        self.response.write(template.render())
+    date_to_post = ndb.DateTimeProperty()
+    date_created = ndb.DateTimeProperty(auto_now_add=True)
+    status = ndb.StringProperty(default="TBP")
 
 application = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/fbpost', FBPostHandler),
+    ('/list/(.*)',ListPostHandler),
+    ('/edit/(.*)',EditPostHandler),
+    ('/delete/(.*)',DeleteHandler)
 ], debug=True)

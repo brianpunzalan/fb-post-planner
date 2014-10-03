@@ -1,8 +1,11 @@
 <html>
 <head>
-    <title>FB Post Planner</title>
+    <title>FB Post Planner | Team 3</title>
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/custom.css">
     <link rel="stylesheet" type="text/css" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-datetimepicker.min.css">
+
 </head>
 
 <body>
@@ -27,9 +30,8 @@
       </div>
     </div>
 
-    <div class="container" style='top: 70px; position: relative;'>
+    <!-- <div class="container" style='top: 70px; position: relative;'>
         <div class='row'>
-
             <form action="/" method="post" id="post-form">
               <div class="form-group">
                 <label for="exampleInputEmail1">Status: </label>
@@ -40,13 +42,94 @@
               <button type="submit" class="btn btn-default btn-facebook">Post</button>
             </form>
     <div class="fb-like" data-href="https://developers.facebook.com/apps/767075363357147/dashboard/" data-layout="standard" data-action="like" data-show-faces="false" data-share="false"></div>
-
         </div>
+    </div> -->
+    <div class="container-fluid mycontainer">
+    <div class="row">
+      <div class="col-sm-3 col-md-2 sidebar mysidebar">
+            <ul class="nav nav-sidebar">
+              <li class="active" role="button" id="home"><a href="#">Home</a></li>
+              <li role="button" id="lists"><a href="#">Lists of Posts</a></li>
+              <li><a href="#" role="button" data-toggle="modal" data-target="#myModal">Post Something</a></li>
+              <!-- <li><a href="#"></a></li>
+              <li><a href="#"></a></li> -->
+            </ul>
+            <!-- <ul class="nav nav-sidebar">
+             <li><a href="">Nav item</a></li>
+              <li><a href="">Nav item again</a></li>
+              <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+             <li><a href="">More navigation</a></li>
+            </ul>
+            <ul class="nav nav-sidebar">
+              <li><a href="">Nav item again</a></li>
+              <li><a href="">One more nav</a></li>
+              <li><a href="">Another nav item</a></li>
+            </ul> -->
+      </div>
+      <div class="col-md-10 col-sm-9 col-sm-offset-3 col-md-offset-2 main" id="homepage">
+          <h1>Welcome to Facebook Post Planner</h1>
+          <p>You can post statuses and schedule posts in facebook without logging in their website. This web application primarily purpose is to provide convenience to people who need to posts statuses ahead of time, specially to those people who uses facebook as their mode of advertisement.</p>
 
+          <button class="btn btn-lg btn-default" data-toggle="modal" data-target="#myModal">Post Something</button>
+      </div>
+      <div class="col-md-10 col-sm-9 col-sm-offset-3 col-md-offset-2 main" id="listpage">
+        <!-- {% for post in posts %}
+          <div class="bs-callout bs-callout-successful">
+            <h4>As of {{post.date_to_post}}</h4>
+            <p>{{post.message}}</p>
+            <a class="badge pull-right" href="/edit/{{post.key.id()}}">Edit</a>
+            <a class="badge pull-right" href="/delete/{{post.key.id()}}">Delete</a>
+          </div>  
+        {% else %}
+          <div>
+              <h1> No posts are scheduled </h1>
+          </div>
+        {% endfor %} -->
+      </div>      
+    </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title" id="myModalLabel">Post on facebook</h4>
+            </div>
+            <form action="/" method="post" id="post-form">
+              <div class="modal-body">
+                
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Status: </label>
+                    <textarea class="form-control" name="message" id="message" required placeholder="What's on your mind?"></textarea>
+                    <input type="hidden" name="access_token" id="access_token" value="">
+                    <input type="hidden" name="userID" id="userID" value="">
+                </div>
+                <div class="form-group">
+                  <div class='input-group date' id='datetimepicker'>
+                      <input type='text' class="form-control" name="date_to_post" placeholder="Date to post"/>
+                      <span class="input-group-addon"><span class="glyphicon glyphicon-calendar" required></span>
+                      </span>
+                  </div>
+                </div>
+                <div class="fb-like" data-href="https://developers.facebook.com/apps/767075363357147/dashboard/" data-layout="standard" data-action="like" data-show-faces="false" data-share="false"></div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" id="btn-schedule-post" class="btn btn-success">Schedule Post</button>
+                <button type="submit" id="btn-post-now" class="btn btn-primary">Post Now</button>
+              </div>
+            </form>
+            
+        </div>
+      </div>
     </div>
 
     <script src="/static/js/vendors/jquery.js"></script>
     <script src="/static/js/vendors/bootstrap.min.js"></script>
+    <script src="/static/js/vendors/bootstrap-datetimepicker.min.js"></script>
     <script src="/static/js/app.js"></script>
 
 </body>
