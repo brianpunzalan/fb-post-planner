@@ -1,7 +1,6 @@
 import os
 import urllib
 import urllib2
-import datetime
 import json
 
 from google.appengine.api import users
@@ -12,8 +11,10 @@ import jinja2
 import webapp2
 import logging
 
-#from models import Post
-#from models import Users
+from datetime import datetime
+
+# from models import Post
+# from models import Users
 
 FACEBOOK_APP_ID = "767075363357147"
 FACEBOOK_APP_SECRET = "a9a299a90cd3398167680df4890a9f8f"
@@ -51,7 +52,7 @@ class MainHandler(webapp2.RequestHandler):
         self.response.write(template.render())
 
     def post(self):
-        post = Posts()
+        post = Post()
 
         post.userID = self.request.get("userID")
         post.message = self.request.get("message")
@@ -131,7 +132,6 @@ class Post(ndb.Model):
 
 application = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/list/(.*)',ListPostHandler),
     ('/edit/(.*)',EditPostHandler),
     ('/delete/(.*)',DeleteHandler)
 ], debug=True)
