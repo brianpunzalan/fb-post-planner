@@ -15,7 +15,7 @@ window.fbAsyncInit = function() {
      fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-    var user;
+    var user = null;
     var baseUrl = "https://graph.facebook.com/v2.1/";
 
     function initialize(callback) {
@@ -28,28 +28,10 @@ window.fbAsyncInit = function() {
         // check if logged in facebook, reflect the state of the button
         checkLoginState();
 
-        function submitForm(){
-            $('#access_token').val(user.accessToken);
-            $('#userID').val(user.userID);
-            alert("submit");
-            if(checkLoginState()){
-                alert("yes");
-                return true;
-            }
-            else{
-                if(login()){
-                    alert("logged in");
-                    return true;
-                }else{
-                    return false;    
-                }
-            }
-        }
-
         $("#post-form [name='date_to_post']").keypress(function(ev){
             ev.preventDefault();
         });
-
+        
         $('#home').click(function(){
             $('#listpage').hide();
             $('#homepage').fadeIn("slow");
@@ -57,21 +39,41 @@ window.fbAsyncInit = function() {
 
 
         $('#lists').click(function(){
-            $('#homepage').hide();
-            $('#listpage').fadeIn("slow")
+            console.log(user);
+            if(user){
+                $('#homepage').hide();
+                console.log("going")
+                refreshLists();
+            }
+            else{
+                alert("Please Login First.");
+            }
         });
 
         $('#btn-schedule-post').click(function(){
-            alert("in");
             $('#post-form').submit(function(){
-                alert("test");
+                $('#access_token').val(user.accessToken);
+                $('#userID').val(user.userID);
+                return true;      
             });
         });
 
         $('#btn-post-now').click(function(){
-            $('#post-form').submit(submitForm);
+            $('#post-form').attr("action","/post-now").submit(function(){
+                $('#access_token').val(user.accessToken);
+                $('#userID').val(user.userID);
+                return true;      
+            });
         });
 
+        $('#btn-delete').click(function(){
+            url = /delete/ + $(this).attr("data-userID");
+            alert(url);
+            $.get(url, function(data){
+                alert("Delete Successful");
+                refreshLists();
+            });
+        });
         // logout button
         $('#fb-logout').click(logout);
         
@@ -118,6 +120,14 @@ window.fbAsyncInit = function() {
         //     }
             
         // });
+    }
+
+    function refreshLists(){
+        console.log("check");
+        url = "/list/"+user.userID;
+        $.get(url,function(data){
+            $('#listpage').html(data).fadeIn("fast");
+        });
     }
 
     // user status
