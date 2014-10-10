@@ -22,7 +22,7 @@ import threading
 
 FACEBOOK_APP_ID = "767075363357147"
 FACEBOOK_APP_SECRET = "a9a299a90cd3398167680df4890a9f8f"
-GRAPH_API_URL =" https://graph.facebook.com/v2.1"
+GRAPH_API_URL ="https://graph.facebook.com/v2.1"
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -55,7 +55,13 @@ def decode_response(str):
     return {
         "access_token" : access_token,
     }
-
+def post_to_object(post):
+    data = {
+            "method": "post",
+            "message": post.message,
+            "access_token" : post.access_token
+        }
+    return data
 class PostToFBHandler(webapp2.RequestHandler):
     def post(self):
         data = {
@@ -164,8 +170,7 @@ class PostAllScheduledPosts(webapp2.RequestHandler):
     def get(self):
         p = Posts()
         p.date_to_post = datetime.now()
-        posts = Posts.query(ndb.AND(Posts.date_to_post <= datetime.now()+timedelta(hours=8),
-            Posts.status=="TBP")).fetch()
+        posts = Posts.query(ndb.AND(Posts.date_to_post <= datetime.now()+timedelta(hours=8),Posts.status=="TBP")).fetch()
         for post in posts:
             data = post_to_object(post)
             post_to_facebook(data,post.user_id)

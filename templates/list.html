@@ -12,7 +12,7 @@
 
   <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">As of {{post.date_to_post}}</h3>
+    <h3 class="panel-title">As of <span id="{{post.key.id()}}">{{post.date_to_post}}</span></h3>
   </div>
   <div class="panel-body">
     {{post.message}}
@@ -31,19 +31,55 @@
   {% for post in posted %}
     <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">As of {{post.date_to_post}}</h3>
+    <h3 class="panel-title">As of <span id="{{post.key.id()}}">{{post.date_to_post}}</span></h3>
   </div>
   <div class="panel-body">
     {{post.message}}
   </div>
   <div class="panel-footer">
-    <a role="button" id="btn-delete" class=""btn btn-md btn-warning" data-userID = "{{post.key.id()}}" href="/delete/{{post.key.id()}}">Delete</a>
+    <a role="button" id="btn-delete" class="btn btn-md btn-warning" data-userID = "{{post.key.id()}}" href="/delete/{{post.key.id()}}">Delete</a>
   </div>
     {% else %}
       <div>
         No post to show
       </div>
   {% endfor %}
+
+<script src="/static/js/vendors/moment.js"></script>
+<script type="text/javascript">
+  posted = [
+  {% for post in posted %}
+    {% if loop.last %}
+      {id:"{{post.key.id()}}",date:"{{post.date_to_post}}"}
+    {% else %}
+      {id:"{{post.key.id()}}",date:"{{post.date_to_post}}"},
+    {% endif %}
+  {% endfor %}
+  ];
+  to_be_post = [
+  {% for post in posts %}
+    {% if loop.last %}
+      {id:"{{post.key.id()}}",date:"{{post.date_to_post}}"}
+    {% else %}
+      {id:"{{post.key.id()}}",date:"{{post.date_to_post}}"},
+    {% endif %}
+  {% endfor %}
+  ];
+  for(var i=0;i<posted.length;i++){
+    var date = new Date(posted[i].date);
+    console.log(date);
+    var formattedDate = moment(date).format('MMMM Do YYYY, h:mm:ss a');
+    console.log(formattedDate);
+    $("#"+posted[i].id).html(formattedDate);
+  }
+  for(var i=0;i<to_be_post.length;i++){
+    var date = new Date(to_be_post[i].date);
+    console.log(date);
+    var formattedDate = moment(date).format('MMMM Do YYYY, h:mm:ss a');
+    console.log(formattedDate);
+    $("#"+to_be_post[i].id).html(formattedDate);
+  }
+</script>
 
 </body>
 </html>
