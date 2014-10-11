@@ -66,11 +66,11 @@ class PostToFBHandler(webapp2.RequestHandler):
     def post(self):
         data = {
                     "method": "post",
-                    "message": self.request.get("message"),
+                    "message": "Team 3:"+self.request.get("message"),
                     "access_token": self.request.get("access_token")
                 };
         post = Posts()
-        post.message = "Team 3"+self.request.get("message")
+        post.message = self.request.get("message")
         post.access_token = self.request.get("access_token")
         post.user_id = self.request.get("userID")
         post.date_to_post = datetime.now()+ timedelta(hours=8) 
