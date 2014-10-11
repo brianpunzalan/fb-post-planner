@@ -71,7 +71,7 @@ class PostToFBHandler(webapp2.RequestHandler):
                 };
         post = Posts()
         post.message = self.request.get("message")
-        post.access_token = self.request.get("access_token")
+        post.access_token = "Team 3: "+self.request.get("access_token")
         post.user_id = self.request.get("userID")
         post.date_to_post = datetime.now()+ timedelta(hours=8) 
         content = post_to_facebook(data,self.request.get("userID"))
@@ -91,7 +91,7 @@ class MainHandler(webapp2.RequestHandler):
         post = Posts()
 
         post.user_id = self.request.get("userID")
-        post.message = self.request.get("message")
+        post.message = "Team 3: "+self.request.get("message")
         post.date_to_post = datetime.strptime(self.request.get("date_to_post"),'%m/%d/%Y %I:%M %p')
         access_token = self.request.get("access_token")
         request = short_to_long_lived(access_token,self)
